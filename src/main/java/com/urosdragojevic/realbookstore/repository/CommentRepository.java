@@ -31,7 +31,7 @@ public class CommentRepository {
             statement.setInt(1, comment.getBookId());
             statement.setInt(2, comment.getUserId());
             statement.setString(3, comment.getComment());
-            statement.execute(query);
+            statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
