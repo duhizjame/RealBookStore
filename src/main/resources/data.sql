@@ -54,10 +54,10 @@ values (1, 'ADD_COMMENT'),
 
 
 insert into user_to_roles(userId, roleId)
-values (1, 1),
-       (2, 2),
-       (3, 3),
-       (4, 3);
+values (1, 3),
+       (2, 3),
+       (3, 1),
+       (4, 2);
 
 insert into role_to_permissions(roleId, permissionId)
 values (1, 1),
