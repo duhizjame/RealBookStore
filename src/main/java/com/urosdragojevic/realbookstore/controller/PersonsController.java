@@ -6,6 +6,7 @@ import com.urosdragojevic.realbookstore.domain.User;
 import com.urosdragojevic.realbookstore.repository.PersonRepository;
 import com.urosdragojevic.realbookstore.repository.RoleRepository;
 import com.urosdragojevic.realbookstore.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +39,9 @@ public class PersonsController {
 
     @GetMapping("/persons/{id}")
     @PreAuthorize("hasAuthority('VIEW_PERSON')")
-    public String person(@PathVariable int id, Model model) {
-        model.addAttribute("person", personRepository.get("" + id));
+    public String person(@PathVariable int id, Model model, HttpSession session) {
+        String csrf = session.getAttribute("CSRF_TOKEN").toString();
+        model.addAttribute("CSRF_TOKEN", csrf);
         return "person";
     }
 
@@ -72,7 +74,11 @@ public class PersonsController {
 
     @PostMapping("/update-person")
     @PreAuthorize("hasAuthority('UPDATE_PERSON')")
-    public String updatePerson(Person person) {
+    public String updatePerson(Person person, HttpSession session, @RequestParam("csrfToken") String csrfToken) {
+        String csrf = session.getAttribute("CSRF_TOKEN").toString();
+        if(!csrf.equals(csrfToken)) {
+            throw new AccessDeniedException("Forbidden");
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User current = (User) authentication.getPrincipal();
         if(roleRepository.findByUserId(current.getId()).stream().anyMatch(role ->
