@@ -71,18 +71,18 @@ public class PersonsController {
     }
 
     @PostMapping("/update-person")
-    @PreAuthorize("hasAuthority('UPDATE_PERSON')")
+//    @PreAuthorize("hasAuthority('UPDATE_PERSON')")
     public String updatePerson(Person person) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User current = (User) authentication.getPrincipal();
-        if(roleRepository.findByUserId(current.getId()).stream().anyMatch(role ->
-                role.getName().equals("MANAGER") || role.getName().equals("REVIEWER"))) {
-            if (Integer.parseInt(person.getId()) != current.getId()) {
-                throw new AccessDeniedException("Forbidden");
-            }
-            else personRepository.update(person);
-        }
-
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User current = (User) authentication.getPrincipal();
+//        if(roleRepository.findByUserId(current.getId()).stream().anyMatch(role ->
+//                role.getName().equals("MANAGER") || role.getName().equals("REVIEWER"))) {
+//            if (Integer.parseInt(person.getId()) != current.getId()) {
+//                throw new AccessDeniedException("Forbidden");
+//            }
+//            else personRepository.update(person);
+//        }
+        personRepository.update(person);
         return "redirect:/persons/" + person.getId();
     }
 
