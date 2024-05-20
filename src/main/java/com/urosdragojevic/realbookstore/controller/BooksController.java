@@ -54,7 +54,10 @@ public class BooksController {
 
         for (Comment comment : comments) {
             Person person = personRepository.get(String.valueOf(comment.getUserId()));
-            viewComments.add(new ViewComment(person.getFirstName() + " " + person.getLastName(), comment.getComment()));
+            if (person == null)
+                viewComments.add(new ViewComment("Deleted", comment.getComment()));
+            else
+                viewComments.add(new ViewComment(person.getFirstName() + " " + person.getLastName(), comment.getComment()));
         }
 
         book.setComments(commentRepository.getAll(id));

@@ -41,13 +41,15 @@ public class PersonsController {
     @PreAuthorize("hasAuthority('VIEW_PERSON')")
     public String person(@PathVariable int id, Model model, HttpSession session) {
         String csrf = session.getAttribute("CSRF_TOKEN").toString();
+        model.addAttribute("person", personRepository.get("" + id));
         model.addAttribute("CSRF_TOKEN", csrf);
         return "person";
     }
 
     @GetMapping("/myprofile")
     @PreAuthorize("hasAuthority('VIEW_MY_PROFILE')")
-    public String self(Model model, Authentication authentication) {
+    public String self(Model model, Authentication authentication, HttpSession session) {
+        model.addAttribute("CSRF_TOKEN", session.getAttribute("CSRF_TOKEN"));
         User user = (User) authentication.getPrincipal();
         model.addAttribute("person", personRepository.get("" + user.getId()));
         return "person";
@@ -57,9 +59,6 @@ public class PersonsController {
     @PreAuthorize("hasAuthority('UPDATE_PERSON')")
     public ResponseEntity<Void> person(@PathVariable int id) {
 
-        personRepository.delete(id);
-        userRepository.delete(id);
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User current = (User) authentication.getPrincipal();
         if(roleRepository.findByUserId(current.getId()).stream().anyMatch(role ->
@@ -68,6 +67,9 @@ public class PersonsController {
                 throw new AccessDeniedException("Forbidden");
             }
         }
+
+        personRepository.delete(id);
+        userRepository.delete(id);
 
         return ResponseEntity.noContent().build();
     }
@@ -88,12 +90,15 @@ public class PersonsController {
             }
             else personRepository.update(person);
         }
+        else
+            personRepository.update(person);
         return "redirect:/persons/" + person.getId();
     }
 
     @GetMapping("/persons")
     @PreAuthorize("hasAuthority('VIEW_PERSONS_LIST')")
-    public String persons(Model model) {
+    public String persons(Model model, HttpSession session) {
+        model.addAttribute("CSRF_TOKEN", session.getAttribute("CSRF_TOKEN"));
         model.addAttribute("persons", personRepository.getAll());
         return "persons";
     }
