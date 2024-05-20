@@ -2,6 +2,8 @@ package com.urosdragojevic.realbookstore.controller;
 
 import com.urosdragojevic.realbookstore.domain.*;
 import com.urosdragojevic.realbookstore.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 
 @Controller
 public class BooksController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BooksController.class);
 
     @Autowired
     private BookRepository bookRepository;
@@ -54,8 +58,10 @@ public class BooksController {
 
         for (Comment comment : comments) {
             Person person = personRepository.get(String.valueOf(comment.getUserId()));
-            if (person == null)
+            if (person == null) {
+                LOG.warn("User that has created this comment has been removed. ID = {}", comment.getUserId());
                 viewComments.add(new ViewComment("Deleted", comment.getComment()));
+            }
             else
                 viewComments.add(new ViewComment(person.getFirstName() + " " + person.getLastName(), comment.getComment()));
         }

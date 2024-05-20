@@ -67,7 +67,7 @@ public class BookRepository {
                 return createBookFromResultSet(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An error occured while fetching book id={}", bookId, e);
         }
         return null;
     }
@@ -94,12 +94,12 @@ public class BookRepository {
                         statement2.setInt(2, genre.getId());
                         statement2.executeUpdate();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        LOG.error("An error occured while executing SQL statement: {}", query2, e);
                     }
                 });
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An error occured while fetching book id={}", bookId, e);
         }
         return id;
     }
