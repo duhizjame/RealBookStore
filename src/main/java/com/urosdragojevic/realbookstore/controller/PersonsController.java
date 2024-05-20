@@ -75,12 +75,12 @@ public class PersonsController {
     }
 
     @PostMapping("/update-person")
-//    @PreAuthorize("hasAuthority('UPDATE_PERSON')")
-    public String updatePerson(Person person, HttpSession session) {
-//        String csrf = session.getAttribute("CSRF_TOKEN").toString();
-//        if(!csrf.equals(csrfToken)) {
-//            throw new AccessDeniedException("Forbidden");
-//        }
+    @PreAuthorize("hasAuthority('UPDATE_PERSON')")
+    public String updatePerson(Person person, HttpSession session, @RequestParam("csrfToken") String csrfToken) {
+        String csrf = session.getAttribute("CSRF_TOKEN").toString();
+        if(!csrf.equals(csrfToken)) {
+            throw new AccessDeniedException("Forbidden");
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User current = (User) authentication.getPrincipal();
         if(roleRepository.findByUserId(current.getId()).stream().anyMatch(role ->
